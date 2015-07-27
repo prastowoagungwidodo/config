@@ -6,16 +6,16 @@ namespace Transformatika\Config;
  */
 class Config
 {
-    protected $config;
+    protected static $config;
 
-    protected $configDir;
+    protected static $configDir;
 
-    public function __construct()
+    public static function init()
     {
-        if ($this->config === null) {
-            $this->configDir = $this->getRootDir() . DS . 'storage' . DS . 'etc';
-            $objConfig = simplexml_load_file($this->configDir . DS . 'app.xml');
-            $this->config = json_decode(json_encode($objConfig), true);
+        if (self::$config === null) {
+            self::$configDir = self::getRootDir() . DS . 'storage' . DS . 'etc';
+            $objConfig = simplexml_load_file(self::$configDir . DS . 'app.xml');
+            self::$config = json_decode(json_encode($objConfig), true);
         }
     }
 
@@ -27,9 +27,9 @@ class Config
      * @param string $path
      * @return SimpleXMLElement
      */
-    public function readConfigFile($path = '', $resultAsObj = false)
+    public static function readConfigFile($path = '', $resultAsObj = false)
     {
-        $realPath = $this->configDir . DS . str_replace('/', DS, $path);
+        $realPath = self::$configDir . DS . str_replace('/', DS, $path);
         if (file_exists($realPath)) {
             $confArray = simplexml_load_file($realPath);
             if ($resultAsObj === true) {
@@ -45,9 +45,9 @@ class Config
      *
      * @return string
      */
-    public function getConfigDir()
+    public static function getConfigDir()
     {
-        return $this->configDir;
+        return self::$configDir;
     }
 
     /**
@@ -55,34 +55,34 @@ class Config
      *
      * @param string $key
      */
-    public function getConfig($key = '')
+    public static function getConfig($key = '')
     {
         if (empty($key)) {
-            return $this->config;
+            return self::$config;
         } else {
             $keys = str_replace('\\', '/', $key);
             $explodeKey = explode('/', $keys);
-            if (array_key_exists($explodeKey[0], $this->config)) {
-                if (isset($explodeKey[1]) && isset($this->config[$explodeKey[0]][$explodeKey[1]])) {
-                    if (isset($explodeKey[2]) && isset($this->config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]])) {
-                        if (isset($explodeKey[3]) && isset($this->config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]])) {
-                            if (isset($explodeKey[4]) && isset($this->config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]][$explodeKey[4]])) {
-                                if (isset($explodeKey[5]) && isset($this->config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]][$explodeKey[4]][$explodeKey[5]])) {
-                                    return $this->config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]][$explodeKey[4]][$explodeKey[5]];
+            if (array_key_exists($explodeKey[0], self::$config)) {
+                if (isset($explodeKey[1]) && isset(self::$config[$explodeKey[0]][$explodeKey[1]])) {
+                    if (isset($explodeKey[2]) && isset(self::$config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]])) {
+                        if (isset($explodeKey[3]) && isset(self::$config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]])) {
+                            if (isset($explodeKey[4]) && isset(self::$config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]][$explodeKey[4]])) {
+                                if (isset($explodeKey[5]) && isset(self::$config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]][$explodeKey[4]][$explodeKey[5]])) {
+                                    return self::$config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]][$explodeKey[4]][$explodeKey[5]];
                                 } else {
-                                    return $this->config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]][$explodeKey[4]];
+                                    return self::$config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]][$explodeKey[4]];
                                 }
                             } else {
-                                return $this->config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]];
+                                return self::$config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]][$explodeKey[3]];
                             }
                         } else {
-                            return $this->config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]];
+                            return self::$config[$explodeKey[0]][$explodeKey[1]][$explodeKey[2]];
                         }
                     } else {
-                        return $this->config[$explodeKey[0]][$explodeKey[1]];
+                        return self::$config[$explodeKey[0]][$explodeKey[1]];
                     }
                 } else {
-                    return $this->config[$explodeKey[0]];
+                    return self::$config[$explodeKey[0]];
                 }
             }
         }
@@ -94,7 +94,7 @@ class Config
      *
      * @return string
      */
-    public function getRootDir()
+    public static function getRootDir()
     {
         return realpath(__DIR__ . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..' . DS . '..');
     }
