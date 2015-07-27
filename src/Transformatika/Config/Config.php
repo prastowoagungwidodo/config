@@ -1,6 +1,9 @@
 <?php
 namespace Transformatika\Config;
 
+/**
+ * Use XML instead of YAML file
+ */
 class Config
 {
     protected $config;
