@@ -18,7 +18,7 @@ class Config
     public static function init($option = array())
     {
         if (self::$config === null) {
-            if (isset($option['storagePath'])) {
+            if (isset($option['configExt'])) {
                 self::$configExt = $option['configExt'];
             }
             if (isset($option['storagePath'])) {
