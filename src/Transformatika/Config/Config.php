@@ -53,16 +53,23 @@ class Config
      * @param string $path
      * @return SimpleXMLElement
      */
-    public static function readConfigFile($path = '', $resultAsObj = false)
+    public static function readConfigFile($path = '')
     {
         $realPath = self::$configDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
         if (file_exists($realPath)) {
-            $confArray = simplexml_load_file($realPath);
-            if ($resultAsObj === true) {
-                return $confArray;
-            } else {
-                return json_decode(json_encode($confArray), true);
-            }
+        	switch (self::$configExt) {
+        		case 'xml':
+        			$objConfig = simplexml_load_file($realPath);
+        			$conf = json_decode(json_encode($objConfig), true);
+        			break;
+        		case 'yaml':
+        			$conf = Yaml::parse(file_get_contents($realPath));
+        			break;
+        		default:
+        			$conf = require_once $realPath;
+        			break;
+        	}
+        	return $conf;
         }
     }
 
