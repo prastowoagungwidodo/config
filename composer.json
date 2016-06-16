@@ -20,5 +20,8 @@
 		"psr-0" : {
 			"Transformatika\\Config\\" : "src/"
 		}
+	},
+	"require": {
+		"symfony/yaml": "^3.1"
 	}
 }
