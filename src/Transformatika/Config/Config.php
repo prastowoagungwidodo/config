@@ -40,8 +40,6 @@ class Config
                     self::$config = require_once self::$configDir.DIRECTORY_SEPARATOR.'app.php';
                     break;
             }
-
-
         }
     }
 
@@ -55,21 +53,22 @@ class Config
      */
     public static function readConfigFile($path = '')
     {
+        $path = str_replace('..', '', $path);
         $realPath = self::$configDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
         if (file_exists($realPath)) {
-        	switch (self::$configExt) {
-        		case 'xml':
-        			$objConfig = simplexml_load_file($realPath);
-        			$conf = json_decode(json_encode($objConfig), true);
-        			break;
-        		case 'yaml':
-        			$conf = Yaml::parse(file_get_contents($realPath));
-        			break;
-        		default:
-        			$conf = require_once $realPath;
-        			break;
-        	}
-        	return $conf;
+            switch (self::$configExt) {
+                case 'xml':
+                    $objConfig = simplexml_load_file($realPath);
+                    $conf = json_decode(json_encode($objConfig), true);
+                    break;
+                case 'yaml':
+                    $conf = Yaml::parse(file_get_contents($realPath));
+                    break;
+                default:
+                    $conf = require_once $realPath;
+                    break;
+            }
+            return $conf;
         }
     }
 
@@ -119,7 +118,6 @@ class Config
                 }
             }
         }
-
     }
 
     /**
