@@ -52,7 +52,7 @@ class Config
                         self::$config = require_once self::$configDir.DIRECTORY_SEPARATOR.'app.php';
                         break;
                 }
-                $str = "<?php\nreturn ".var_export(self::$config, true);
+                $str = "<?php\nreturn ".var_export(self::$config, true).";\n";
                 file_put_contents($cachedConfig, $str);
             }
         }
@@ -87,7 +87,7 @@ class Config
                         $conf = require_once $realPath;
                         break;
                 }
-                $str = "<?php\nreturn ".var_export($conf, true);
+                $str = "<?php\nreturn ".var_export($conf, true).";\n";
                 file_put_contents($cachedFile, $str);
             }
         }
