@@ -70,7 +70,7 @@ class Config
     {
         $path = str_replace('..', '', $path);
         $realPath = self::$configDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
-        $cachedFile = self::$cachePath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
+        $cachedFile = self::$cachePath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path).'.php';
         if (file_exists($cachedFile)) {
             $conf = require_once($cachedFile);
         } else {
