@@ -15,6 +15,8 @@ class Config
 
     protected static $storagePath = 'storage';
 
+    protected static $cachePath;
+
     public static function init($option = array())
     {
         if (self::$config === null) {
@@ -27,18 +29,31 @@ class Config
             if (isset($option['srcPath'])) {
                 self::$srcPath = $option['srcPath'];
             }
+
             self::$configDir = self::getRootDir() . DIRECTORY_SEPARATOR . self::$storagePath . DIRECTORY_SEPARATOR . 'config';
-            switch (self::$configExt) {
-                case 'xml':
-                    $objConfig = simplexml_load_file(self::$configDir . DIRECTORY_SEPARATOR . 'app.xml');
-                    self::$config = json_decode(json_encode($objConfig), true);
-                    break;
-                case 'yaml':
-                    self::$config = Yaml::parse(file_get_contents(self::$configDir.DIRECTORY_SEPARATOR.'app.yaml'));
-                    break;
-                default:
-                    self::$config = require_once self::$configDir.DIRECTORY_SEPARATOR.'app.php';
-                    break;
+            if (isset($option['cachePath'])) {
+                self::$cachePath = $self::$configDir.DIRECTORY_SEPARATOR.$option['cachePath'];
+            } else {
+                self::$cachePath = $self::$configDir;
+            }
+            $cachedConfig = self::$cachePath.DIRECTORY_SEPARATOR.'app-cache.php';
+            if (file_exists($cachedConfig)) {
+                self::$config = require_once $cachedConfig;
+            } else {
+                switch (self::$configExt) {
+                    case 'xml':
+                        $objConfig = simplexml_load_file(self::$configDir . DIRECTORY_SEPARATOR . 'app.xml');
+                        self::$config = json_decode(json_encode($objConfig), true);
+                        break;
+                    case 'yaml':
+                        self::$config = Yaml::parse(file_get_contents(self::$configDir.DIRECTORY_SEPARATOR.'app.yaml'));
+                        break;
+                    default:
+                        self::$config = require_once self::$configDir.DIRECTORY_SEPARATOR.'app.php';
+                        break;
+                }
+                $str = "<?php\nreturn ".var_export(self::$config, true);
+                file_put_contents($cachedConfig, $str);
             }
         }
     }
@@ -55,21 +70,28 @@ class Config
     {
         $path = str_replace('..', '', $path);
         $realPath = self::$configDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
-        if (file_exists($realPath)) {
-            switch (self::$configExt) {
-                case 'xml':
-                    $objConfig = simplexml_load_file($realPath);
-                    $conf = json_decode(json_encode($objConfig), true);
-                    break;
-                case 'yaml':
-                    $conf = Yaml::parse(file_get_contents($realPath));
-                    break;
-                default:
-                    $conf = require_once $realPath;
-                    break;
+        $cachedFile = self::$cachePath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
+        if (file_exists($cachedFile)) {
+            $conf = require_once($cachedFile);
+        } else {
+            if (file_exists($realPath)) {
+                switch (self::$configExt) {
+                    case 'xml':
+                        $objConfig = simplexml_load_file($realPath);
+                        $conf = json_decode(json_encode($objConfig), true);
+                        break;
+                    case 'yaml':
+                        $conf = Yaml::parse(file_get_contents($realPath));
+                        break;
+                    default:
+                        $conf = require_once $realPath;
+                        break;
+                }
+                $str = "<?php\nreturn ".var_export($conf, true);
+                file_put_contents($cachedFile, $str);
             }
-            return $conf;
         }
+        return $conf;
     }
 
     /**
