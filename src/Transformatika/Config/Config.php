@@ -32,9 +32,9 @@ class Config
 
             self::$configDir = self::getRootDir() . DIRECTORY_SEPARATOR . self::$storagePath . DIRECTORY_SEPARATOR . 'config';
             if (isset($option['cachePath'])) {
-                self::$cachePath = $self::$configDir.DIRECTORY_SEPARATOR.$option['cachePath'];
+                self::$cachePath = self::$configDir.DIRECTORY_SEPARATOR.$option['cachePath'];
             } else {
-                self::$cachePath = $self::$configDir;
+                self::$cachePath = self::$configDir;
             }
             $cachedConfig = self::$cachePath.DIRECTORY_SEPARATOR.'app-cache.php';
             if (file_exists($cachedConfig)) {
