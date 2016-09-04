@@ -71,7 +71,7 @@ class Config
         $path = str_replace('..', '', $path);
         $realPath = self::$configDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
         $cachedFile = self::$cachePath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path).'.php';
-        if (file_exists($cachedFile) && self::config['cache'] === true) {
+        if (file_exists($cachedFile) && self::$config['cache'] === true) {
             $conf = require_once($cachedFile);
         } else {
             if (file_exists($realPath)) {
@@ -87,7 +87,7 @@ class Config
                         $conf = require_once $realPath;
                         break;
                 }
-                if (self::config['cache'] === true) {
+                if (self::$config['cache'] === true) {
                     $str = "<?php\nreturn ".var_export($conf, true).";\n";
                     file_put_contents($cachedFile, $str);
                 }
