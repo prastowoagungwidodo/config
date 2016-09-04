@@ -32,11 +32,11 @@ class Config
 
             self::$configDir = self::getRootDir() . DIRECTORY_SEPARATOR . self::$storagePath . DIRECTORY_SEPARATOR . 'config';
             if (isset($option['cachePath'])) {
-                self::$cachePath = self::$configDir.DIRECTORY_SEPARATOR.$option['cachePath'];
+                self::$cachePath = self::getRootDir().DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $option['cachePath']);
             } else {
-                self::$cachePath = self::$configDir;
+                self::$cachePath = self::getRootDir().DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'config';
             }
-            $cachedConfig = self::$cachePath.DIRECTORY_SEPARATOR.'app-cache.php';
+            $cachedConfig = self::$cachePath.DIRECTORY_SEPARATOR.'app.php';
             if (file_exists($cachedConfig)) {
                 self::$config = require_once $cachedConfig;
             } else {
@@ -71,7 +71,7 @@ class Config
         $path = str_replace('..', '', $path);
         $realPath = self::$configDir . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
         $cachedFile = self::$cachePath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path).'.php';
-        if (file_exists($cachedFile)) {
+        if (file_exists($cachedFile) && self::config['cache'] === true) {
             $conf = require_once($cachedFile);
         } else {
             if (file_exists($realPath)) {
@@ -87,8 +87,10 @@ class Config
                         $conf = require_once $realPath;
                         break;
                 }
-                $str = "<?php\nreturn ".var_export($conf, true).";\n";
-                file_put_contents($cachedFile, $str);
+                if (self::config['cache'] === true) {
+                    $str = "<?php\nreturn ".var_export($conf, true).";\n";
+                    file_put_contents($cachedFile, $str);
+                }
             }
         }
         return $conf;
