@@ -88,6 +88,7 @@ class Config
                         break;
                 }
                 if (self::$config['cache'] === true) {
+                    touch($cachedFile);
                     $str = "<?php\nreturn ".var_export($conf, true).";\n";
                     file_put_contents($cachedFile, $str);
                 }
