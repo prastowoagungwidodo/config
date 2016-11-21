@@ -1,8 +1,37 @@
 <?php
+/**
+ * Config
+ *
+ * MVC Configuration
+ * ini sebenarnya hanyalah pembaca file saja
+ * tapi kenapa dinamakan Config ya????
+ * saya juga bingung kenapa bisa ngasi nama gitu.
+ *
+ * @category  MVC
+ * @package   Config
+ * @author    Prastowo aGung Widodo <agung@transformatika.com>
+ * @copyright 2016 PT Daya Transformatika
+ * @license   MIT
+ * @version   GIT: $Id$
+ * @link      https://github.com/transformatika/config.git
+ */
 namespace Transformatika\Config;
 
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * Config Class
+ *
+ * Handle configuration file
+ *
+ * @category  MVC
+ * @package   Config
+ * @author    Prastowo aGung Widodo <agung@transformatika.com>
+ * @copyright 2016 PT Daya Transformatika
+ * @license   MIT
+ * @version   GIT: $Id$
+ * @link      https://github.com/transformatika/mvc.git
+ */
 class Config
 {
     protected static $config;
@@ -32,9 +61,9 @@ class Config
 
             self::$configDir = self::getRootDir() . DIRECTORY_SEPARATOR . self::$storagePath . DIRECTORY_SEPARATOR . 'config';
             if (isset($option['cachePath'])) {
-                self::$cachePath = self::getRootDir().DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $option['cachePath']);
+                self::$cachePath = self::getRootDir().DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $option['cachePath']).DIRECTORY_SEPARATOR.'config';
             } else {
-                self::$cachePath = self::getRootDir().DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'config';
+                self::$cachePath = self::getRootDir().DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'config';
             }
             $cachedConfig = self::$cachePath.DIRECTORY_SEPARATOR.'app.php';
             if (file_exists($cachedConfig)) {
