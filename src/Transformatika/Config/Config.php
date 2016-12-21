@@ -58,8 +58,12 @@ class Config
             if (isset($option['srcPath'])) {
                 self::$srcPath = $option['srcPath'];
             }
-
-            self::$configDir = self::getRootDir() . DIRECTORY_SEPARATOR . self::$storagePath . DIRECTORY_SEPARATOR . 'config';
+            if (isset($option['configDir'])) {
+                self::$configDir = $option['configDir'];
+            } else {
+                self::$configDir = self::getRootDir() . DIRECTORY_SEPARATOR . self::$storagePath . DIRECTORY_SEPARATOR . 'config';
+            }
+            
             if (isset($option['cachePath'])) {
                 self::$cachePath = self::getRootDir().DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $option['cachePath']).DIRECTORY_SEPARATOR.'config';
             } else {
