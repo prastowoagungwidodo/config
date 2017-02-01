@@ -46,8 +46,11 @@ class Config
 
     protected static $cachePath;
 
+    protected static $rootDir;
+
     public static function init($option = array())
     {
+        self::$rootDir = self::getRootDir();
         if (self::$config === null) {
             if (isset($option['configExt'])) {
                 self::$configExt = $option['configExt'];
@@ -61,16 +64,24 @@ class Config
             if (isset($option['configDir'])) {
                 self::$configDir = $option['configDir'];
             } else {
-                self::$configDir = self::getRootDir() . DIRECTORY_SEPARATOR . self::$storagePath . DIRECTORY_SEPARATOR . 'config';
+                self::$configDir = self::$rootDir . DIRECTORY_SEPARATOR . self::$storagePath . DIRECTORY_SEPARATOR . 'config';
             }
-            
+
             if (isset($option['cachePath'])) {
-                self::$cachePath = self::getRootDir().DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $option['cachePath']).DIRECTORY_SEPARATOR.'config';
+                self::$cachePath = self::$rootDir.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $option['cachePath']).DIRECTORY_SEPARATOR.'config';
             } else {
-                self::$cachePath = self::getRootDir().DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'config';
+                self::$cachePath = self::$rootDir.DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.'config';
             }
+
+            $option['cache'] = isset($option['cache']) ? $option['cache'] : true;
+
+            if (!is_dir(self::$cachePath)) {
+                $createDir = self::createDir(self::$cachePath);
+                var_dump($createDir);exit();
+            }
+
             $cachedConfig = self::$cachePath.DIRECTORY_SEPARATOR.'app.php';
-            if (file_exists($cachedConfig)) {
+            if (file_exists($cachedConfig) && $option['cache'] === true) {
                 self::$config = require_once $cachedConfig;
             } else {
                 switch (self::$configExt) {
@@ -86,8 +97,39 @@ class Config
                         break;
                 }
                 $str = "<?php\nreturn ".var_export(self::$config, true).";\n";
+                touch($cachedConfig);
                 file_put_contents($cachedConfig, $str);
             }
+        }
+    }
+
+    protected static function createDir($path, $includeFileName = false)
+    {
+        $dirpath = str_replace('/', DIRECTORY_SEPARATOR, rawurldecode($path));
+        $dirpath = str_replace(self::$rootDir, '', $dirpath);
+        $dir = explode(DIRECTORY_SEPARATOR, $dirpath);
+        $total = (int)count($dir);
+
+        if ($includeFileName == true) {
+            unset($dir[($total - 1)]);
+        }
+        $currentDirectory = self::$rootDir;
+        $error = 0;
+        foreach ($dir as $key) {// Membuat direktori
+            if ($key != '' && !is_dir($currentDirectory . $key)) {
+                $oldumask = umask(0);
+                $m = mkdir($currentDirectory . $key, 0777);
+                if (!$m) {
+                    $error++;
+                }
+                umask($oldumask);
+            }
+            $currentDirectory .= $key . DIRECTORY_SEPARATOR;
+        }
+        if ($error > 0) {
+            return false;
+        } else {
+            return true;
         }
     }
 
